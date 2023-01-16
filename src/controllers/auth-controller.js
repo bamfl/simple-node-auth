@@ -31,7 +31,13 @@ class AuthController {
 
       await User.create({ email, password: hashPassword, roles: [role.value] });
 
-      res.status(201).send({ message: "User created successfully" });
+      const token = jwt.sign(
+        { email, roles: existingUser.roles },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+  
+      return res.status(201).send({ message: "User created successfully", token });
     } catch (error) {
       res.status(500).send(error);
     }
